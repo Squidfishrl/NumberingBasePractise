@@ -6,6 +6,16 @@ import math
 from jsonData import BaseAlreadyExistsError, DateAlreadyExistsError, DigitGroupAlreadyExistsError, add_base, save_data, load_data, add_date, add_digits
 import datetime
 
+def is_prime(num):
+    if num == 1:
+        return True 
+
+    for i in range(2, int(num/2) + 1):
+        if num % i == 0:
+            return False 
+
+    return True 
+
 def clear_console():
     os.system('clear')
 
@@ -19,9 +29,10 @@ def start():
             "2 - subtraction \n"
             "3 - addition and subtraction \n"
             "4 - multiplication \n"
-            "5 - division \n"
+            "5 - easy division \n"
             "6 - multiplication and division \n"
             "7 - all inculded \n"
+            "8 - hard division \n"
             "\nChoose mode: "
             )
 
@@ -214,7 +225,7 @@ while(1):
             operand = '-'
     elif(mode == 4):
         operand = '*'
-    elif(mode == 5):
+    elif(mode == 5 or mode == 8):
         operand = '/'
     elif(mode == 6):
         if(random.randint(0, 1)):
@@ -235,6 +246,18 @@ while(1):
     # generate nums
     num1 = random.randint(minRng, maxRng)
     num2 = random.randint(minRng, maxRng)
+
+    # generate numbers that divide without a floating point 
+    if operand == '/' and mode != 8:
+        # generate a non prime first number
+        while is_prime(num1):
+            num1 = random.randint(minRng, maxRng)
+
+        while num1 % num2 != 0:
+            if minRng == 1:
+                num2 = random.randint(minRng + 1, int(num1 / 2) + 1)
+            else:
+                num2 = random.randint(minRng, int(num1 / 2) + 1)
 
     # avoid negative answers
     if(operand == '-' and num1 < num2):
@@ -267,10 +290,13 @@ while(1):
     elif(operand == '*'):
         answer = num1 * num2
     elif(operand == '/'):
-        answer = num1 / num2
+        if mode == 8:
+            answer = num1 / num2
+        else:
+            answer = int(num1 / num2)
 
     # convert answer to base
-    if(operand == '/'):
+    if(operand == '/' and mode == 8):
         answer = float_dec_to_base(answer, base, 4)
     else:
         answer = int_dec_to_base(answer, base)
